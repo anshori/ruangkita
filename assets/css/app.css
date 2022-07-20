@@ -91,6 +91,9 @@ input[type="radio"], input[type="checkbox"] {
 .table {
   margin-bottom: 0px;
 }
+.navbar {
+  background-color: #2d2c4d;
+}
 .navbar .navbar-brand {
   font-weight: bold;
   font-size: 25px;
