@@ -22,25 +22,7 @@ $("#about-btn").click(function() {
   $(".navbar-collapse.in").collapse("hide");
   return false;
 });
-
-$("#full-extent-btn").click(function() {
-  map.fitBounds(surakarta.getBounds());
-  $(".navbar-collapse.in").collapse("hide");
-  return false;
-});
-
-$("#legend-btn").click(function() {
-  $("#legendModal").modal("show");
-  $(".navbar-collapse.in").collapse("hide");
-  return false;
-});
-
-$("#login-btn").click(function() {
-  $("#loginModal").modal("show");
-  $(".navbar-collapse.in").collapse("hide");
-  return false;
-});
-
+      
 $("#list-btn").click(function() {
   animateSidebar();
   return false;
@@ -118,10 +100,10 @@ function syncSidebar() {
 /* Basemap Layers */
 var cartoLight = L.tileLayer("https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png", {
   maxZoom: 19,
-  attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://cartodb.com/attributions">CartoDB</a>'
+  attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://cartodb.com/attributions">CartoDB</a> | <a href="http://www.github.com/maspannn">Mas Pannn</a>'
 });
 var google = L.tileLayer('https://mt0.google.com/vt/lyrs=r&hl=en&x={x}&y={y}&z={z}', {
-  attribution: '<a href="https://maspannn.github.io" target="_blank">Mas Pannn</a>'
+  attribution: 'Google Street | <a href="https://maspannn.github.io" target="_blank">Mas Pannn</a>'
 });
 
 /* Overlay Layers */
@@ -704,15 +686,15 @@ var wisatajogja = L.geoJson(null, {
 });
 $.getJSON("data/wisatajogja.geojson", function (data) {
   wisatajogja.addData(data);
-  map.addLayer(wisatajogjaLayer);
+  //map.addLayer(wisatajogjaLayer);
 });
 
 map = L.map("map", {
-  zoom: 10,
+  zoom: 9,
   center: [-7.801389645,110.364775452],
   layers: [cartoLight, surakarta, markerClusters, highlight],
   zoomControl: false,
-  attributionControl: false
+  attributionControl: true
 });
 
 /* Layer control listeners that allow for a single markerClusters layer */
@@ -764,7 +746,7 @@ var attributionControl = L.control({
 });
 attributionControl.onAdd = function (map) {
   var div = L.DomUtil.create("div", "leaflet-control-attribution");
-  div.innerHTML = "<span class='hidden-xs'>Developed by <a href='http://bryanmcbride.com'>bryanmcbride.com</a> | </span><a href='#' onclick='$(\"#attributionModal\").modal(\"show\"); return false;'>Attribution</a>";
+  div.innerHTML = "<span class='hidden-xs'>Developed by <a href='http://www.github.com/maspannn'>Mas Pannn</a>";
   return div;
 };
 map.addControl(attributionControl);
