@@ -77,14 +77,14 @@ function syncSidebar() {
   wisata.eachLayer(function (layer) {
     if (map.hasLayer(wisataLayer)) {
       if (map.getBounds().contains(layer.getLatLng())) {
-        $("#feature-list tbody").append('<tr class="feature-row" id="' + L.stamp(layer) + '" lat="' + layer.getLatLng().lat + '" lng="' + layer.getLatLng().lng + '"><td style="vertical-align: middle;"><img width="16" height="18" src="assets/img/pin.png"></td><td class="feature-name">' + layer.feature.properties.Name + '</td><td style="vertical-align: middle;"><i class="fa fa-chevron-right pull-right"></i></td></tr>');
+        $("#feature-list tbody").append('<tr class="feature-row" id="' + L.stamp(layer) + '" lat="' + layer.getLatLng().lat + '" lng="' + layer.getLatLng().lng + '"><td style="vertical-align: middle;"><img width="23" height="32" src="assets/img/dot_pinlet.png"></td><td class="feature-name">' + layer.feature.properties.Name + '</td><td style="vertical-align: middle;"><i class="fa fa-chevron-right pull-right"></i></td></tr>');
       }
     }
   });
   wisatajogja.eachLayer(function (layer) {
     if (map.hasLayer(wisatajogjaLayer)) {
       if (map.getBounds().contains(layer.getLatLng())) {
-        $("#feature-list tbody").append('<tr class="feature-row" id="' + L.stamp(layer) + '" lat="' + layer.getLatLng().lat + '" lng="' + layer.getLatLng().lng + '"><td style="vertical-align: middle;"><img width="16" height="18" src="assets/img/pin.png"></td><td class="feature-name">' + layer.feature.properties.Name + '</td><td style="vertical-align: middle;"><i class="fa fa-chevron-right pull-right"></i></td></tr>');
+        $("#feature-list tbody").append('<tr class="feature-row" id="' + L.stamp(layer) + '" lat="' + layer.getLatLng().lat + '" lng="' + layer.getLatLng().lng + '"><td style="vertical-align: middle;"><img width="23" height="32" src="assets/img/dot_pinlet.png"></td><td class="feature-name">' + layer.feature.properties.Name + '</td><td style="vertical-align: middle;"><i class="fa fa-chevron-right pull-right"></i></td></tr>');
       }
     }
   });
@@ -100,7 +100,7 @@ function syncSidebar() {
 /* Basemap Layers */
 var cartoLight = L.tileLayer("https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png", {
   maxZoom: 19,
-  attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://cartodb.com/attributions">CartoDB</a> | <a href="http://www.github.com/maspannn">Mas Pannn</a>'
+  attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> | &copy; <a href="https://cartodb.com/attributions">CartoDB</a> | <a href="http://www.github.com/maspannn">Mas Pannn</a>'
 });
 var google = L.tileLayer('https://mt0.google.com/vt/lyrs=r&hl=en&x={x}&y={y}&z={z}', {
   attribution: 'Google Street | <a href="https://maspannn.github.io" target="_blank">Mas Pannn</a>'
@@ -606,14 +606,17 @@ var markerClusters = new L.MarkerClusterGroup({
   disableClusteringAtZoom: 16
 });
 
+
+//var iconJateng = L.AwesomeMarkers.icon({icon: 'fa-bed', prefix: 'fa', markerColor: 'darkblue'});
+
 /* Empty layer placeholder to add to layer control for listening when to add/remove wisata to markerClusters layer */
 var wisataLayer = L.geoJson(null);
 var wisata = L.geoJson(null, {
   pointToLayer: function (feature, latlng) {
     return L.marker(latlng, {
       icon: L.icon({
-        iconUrl: "assets/img/pin.png",
-        iconSize: [24, 28],
+        iconUrl: "assets/img/dot_pinlet.png",
+        iconSize: [23, 32],
         iconAnchor: [12, 28],
         popupAnchor: [0, -25]
       }),
@@ -623,7 +626,7 @@ var wisata = L.geoJson(null, {
   },
   onEachFeature: function (feature, layer) {
     if (feature.properties) {
-      var content = feature.properties.Description+"<table class='table table-striped table-bordered table-condensed'>" + "<tr><th>Name</th><td>" + feature.properties.Name + "</td></tr>" + "<tr><th>Deskripsi</th><td>" + feature.properties.Description + "</td></tr>" + "<tr><th>Rute</th><td><a href='https://www.google.com/maps/dir/?api=1&destination=" + feature.geometry.coordinates[1] + "," + feature.geometry.coordinates[0] + "' target='_blank' class='btn btn-info' title='Google Maps'>Google Maps</a><br><a href='http://maps.google.com/maps?q=&layer=c&cbll=" + feature.geometry.coordinates[1] + "," + feature.geometry.coordinates[0] + "' target='_blank' class='btn btn-info' title='Google Street View' style='margin-top:5px'>Street View</a></td></tr><table>";
+      var content = "<table class='table table-striped table-bordered table-condensed'>" + "<tr><th>Nama</th><td>" + feature.properties.Name + "</td></tr>" + "<tr><th>Deskripsi</th><td>" + feature.properties.Description + "</td></tr>" + "<tr><th>Rute</th><td><a href='https://www.google.com/maps/dir/?api=1&destination=" + feature.geometry.coordinates[1] + "," + feature.geometry.coordinates[0] + "' target='_blank' class='btn btn-info' title='Google Maps'>Google Maps</a><br><a href='http://maps.google.com/maps?q=&layer=c&cbll=" + feature.geometry.coordinates[1] + "," + feature.geometry.coordinates[0] + "' target='_blank' class='btn btn-info' title='Google Street View' style='margin-top:5px'>Street View</a></td></tr><table>";
       layer.on({
         click: function (e) {
           $("#feature-title").html(feature.properties.Name);
@@ -632,7 +635,7 @@ var wisata = L.geoJson(null, {
           highlight.clearLayers().addLayer(L.circleMarker([feature.geometry.coordinates[1], feature.geometry.coordinates[0]], highlightStyle));
         }
       });
-      $("#feature-list tbody").append('<tr class="feature-row" id="' + L.stamp(layer) + '" lat="' + layer.getLatLng().lat + '" lng="' + layer.getLatLng().lng + '"><td style="vertical-align: middle;"><img width="16" height="18" src="assets/img/pin.png"></td><td class="feature-name">' + layer.feature.properties.Name + '</td><td style="vertical-align: middle;"><i class="fa fa-chevron-right pull-right"></i></td></tr>');
+      $("#feature-list tbody").append('<tr class="feature-row" id="' + L.stamp(layer) + '" lat="' + layer.getLatLng().lat + '" lng="' + layer.getLatLng().lng + '"><td style="vertical-align: middle;"><img width="23" height="32" src="assets/img/dot_pinlet.png"></td><td class="feature-name">' + layer.feature.properties.Name + '</td><td style="vertical-align: middle;"><i class="fa fa-chevron-right pull-right"></i></td></tr>');
       wisataSearch.push({
         name: layer.feature.properties.Name,
         source: "Jateng",
@@ -653,8 +656,8 @@ var wisatajogja = L.geoJson(null, {
   pointToLayer: function (feature, latlng) {
     return L.marker(latlng, {
       icon: L.icon({
-        iconUrl: "assets/img/pin.png",
-        iconSize: [24, 28],
+        iconUrl: "assets/img/dot_pinlet.png",
+        iconSize: [23, 32],
         iconAnchor: [12, 28],
         popupAnchor: [0, -25]
       }),
@@ -664,7 +667,7 @@ var wisatajogja = L.geoJson(null, {
   },
   onEachFeature: function (feature, layer) {
     if (feature.properties) {
-      var content = "<table class='table table-striped table-bordered table-condensed'>" + "<tr><th>Name</th><td>" + feature.properties.Name + "</td></tr>" + "<tr><th>Rute</th><td><a href='https://www.google.com/maps/dir/?api=1&destination=" + feature.geometry.coordinates[1] + "," + feature.geometry.coordinates[0] + "' target='_blank' class='btn btn-info' title='Google Maps'>Google Maps</a><br><a href='http://maps.google.com/maps?q=&layer=c&cbll=" + feature.geometry.coordinates[1] + "," + feature.geometry.coordinates[0] + "' target='_blank' class='btn btn-info' title='Google Street View' style='margin-top:5px'>Street View</a></td></tr><table>";
+      var content = "<table class='table table-striped table-bordered table-condensed'>" + "<tr><th>Nama</th><td>" + feature.properties.Name + "</td></tr>" + "<tr><th>Deskripsi</th><td>" + feature.properties.Description + "</td></tr>" + "<tr><th>Rute</th><td><a href='https://www.google.com/maps/dir/?api=1&destination=" + feature.geometry.coordinates[1] + "," + feature.geometry.coordinates[0] + "' target='_blank' class='btn btn-info' title='Google Maps'>Google Maps</a><br><a href='http://maps.google.com/maps?q=&layer=c&cbll=" + feature.geometry.coordinates[1] + "," + feature.geometry.coordinates[0] + "' target='_blank' class='btn btn-info' title='Google Street View' style='margin-top:5px'>Street View</a></td></tr><table>";
       layer.on({
         click: function (e) {
           $("#feature-title").html(feature.properties.Name);
@@ -673,7 +676,7 @@ var wisatajogja = L.geoJson(null, {
           highlight.clearLayers().addLayer(L.circleMarker([feature.geometry.coordinates[1], feature.geometry.coordinates[0]], highlightStyle));
         }
       });
-      $("#feature-list tbody").append('<tr class="feature-row" id="' + L.stamp(layer) + '" lat="' + layer.getLatLng().lat + '" lng="' + layer.getLatLng().lng + '"><td style="vertical-align: middle;"><img width="16" height="18" src="assets/img/pin.png"></td><td class="feature-name">' + layer.feature.properties.Name + '</td><td style="vertical-align: middle;"><i class="fa fa-chevron-right pull-right"></i></td></tr>');
+      $("#feature-list tbody").append('<tr class="feature-row" id="' + L.stamp(layer) + '" lat="' + layer.getLatLng().lat + '" lng="' + layer.getLatLng().lng + '"><td style="vertical-align: middle;"><img width="23" height="32" src="assets/img/dot_pinlet.png"></td><td class="feature-name">' + layer.feature.properties.Name + '</td><td style="vertical-align: middle;"><i class="fa fa-chevron-right pull-right"></i></td></tr>');
       wisatajogjaSearch.push({
         name: layer.feature.properties.Name,
         source: "Jogja",
@@ -801,10 +804,10 @@ var baseLayers = {
 
 var groupedOverlays = {
   "Points of Interest": {
-    "<img src='assets/img/pin.png' width='24' height='28'>&nbsp;Wisata Jawa Tengah": wisataLayer,
-    "<img src='assets/img/pin.png' width='24' height='28'>&nbsp;Wisata Yogyakarta": wisatajogjaLayer,
+    "Wisata Jawa Tengah": wisataLayer,
+    "Wisata Yogyakarta": wisatajogjaLayer,
   },
-  "Peta Administrasi": {
+  "Provinsi Jawa Tengah": {
     "Kota Surakarta": surakarta,
     "Kabupaten Sukoharjo": sukoharjo,
     "Kabupaten Klaten": klaten,
@@ -1046,7 +1049,7 @@ $(document).one("ajaxStop", function () {
     displayKey: "name",
     source: wisataBH.ttAdapter(),
     templates: {
-      header: "<h4 class='typeahead-header'><img src='assets/img/pin.png' width='24' height='28'>&nbsp;Wisata Jawa Tengah</h4>",
+      header: "<h4 class='typeahead-header'><img src='assets/img/dot_pinlet.png' width='23' height='32'>&nbsp;Wisata Jawa Tengah</h4>",
       suggestion: Handlebars.compile(["{{name}}<br>&nbsp;<small>{{address}}</small>"].join(""))
     }
   }, {
@@ -1054,7 +1057,7 @@ $(document).one("ajaxStop", function () {
     displayKey: "name",
     source: wisatajogjaBH.ttAdapter(),
     templates: {
-      header: "<h4 class='typeahead-header'><img src='assets/img/pin.png' width='24' height='28'>&nbsp;Wisata Yogyakarta</h4>",
+      header: "<h4 class='typeahead-header'><img src='assets/img/dot_pinlet.png' width='23' height='32'>&nbsp;Wisata Yogyakarta</h4>",
       suggestion: Handlebars.compile(["{{name}}<br>&nbsp;<small>{{address}}</small>"].join(""))
     }
   },
