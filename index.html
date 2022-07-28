@@ -14,7 +14,7 @@
     <meta property="og:image:type" content="image/jpeg">
     <meta property="og:image" content="assets/img/banner.jpg">
     
-    <title>Ruang Kita | Mengenal Indonesia Lebih Dekat Dalam Satu Genggaman</title>
+    <title>Ruang Kita | Mengenal Jogja Lebih Dekat Dalam Satu Genggaman</title>
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
@@ -50,6 +50,7 @@
             </div>
           </form>
           <ul class="nav navbar-nav">
+            <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" id="legend-btn"><i class="fa fa-picture-o"></i>&nbsp;&nbsp;Legenda</a></li>
             <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" id="about-btn"><i class="fa fa-question-circle white"></i>&nbsp;&nbsp;About</a></li>
             <li class="hidden-xs"><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" id="list-btn"><i class="fa fa-list white"></i>&nbsp;&nbsp;POI List</a></li>
           </ul>
@@ -176,13 +177,39 @@
     </div><!-- /.modal -->
 
     <div class="modal fade" id="featureModal" tabindex="-1" role="dialog">
-      <div class="modal-dialog">
+      <div class="modal-dialog modal-fullscreen-sm-down">
         <div class="modal-content">
           <div class="modal-header">
             <button class="close" type="button" data-dismiss="modal" aria-hidden="true">&times;</button>
             <h4 class="modal-title text-primary" id="feature-title"></h4>
           </div>
           <div class="modal-body" id="feature-info"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+    
+    <div class="modal fade" id="legendModal" tabindex="-1" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title">Map Legend</h4>
+          </div>
+          <div class="modal-body">
+            <b>Kelas Jumlah Penduduk</b><br>
+            <svg width="40" height="20">
+              <rect width="40" height="20" style="fill:#bd0026;stroke-width:1;stroke:gray;opacity:0.7" />
+            </svg> Tinggi (> 100.000 Jiwa)<br>
+            <svg width="40" height="20">
+              <rect width="40" height="20" style="fill:#fd8d3c;stroke-width:1;stroke:gray;opacity:0.7" />
+            </svg> Sedang (50.000 - 100.000 Jiwa)<br>
+            <svg width="40" height="20">
+              <rect width="40" height="20" style="fill:#ffffb2;stroke-width:1;stroke:gray;opacity:0.7" />
+            </svg> Rendah (< 50.000 Jiwa)
+          </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
           </div>
