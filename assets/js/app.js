@@ -175,19 +175,17 @@ var markerClusters = new L.MarkerClusterGroup({
 });
 
 
-//var iconJateng = L.AwesomeMarkers.icon({icon: 'fa-bed', prefix: 'fa', markerColor: 'darkblue'});
-
 /* Empty layer placeholder to add to layer control for listening when to add/remove wisata to markerClusters layer */
 var wisatajogjaLayer = L.geoJson(null);
 var wisatajogja = L.geoJson(null, {
   pointToLayer: function (feature, latlng) {
     return L.marker(latlng, {
-      icon: L.icon({
-        iconUrl: "assets/img/dot_pinlet.png",
-        iconSize: [23, 32],
-        iconAnchor: [12, 28],
-        popupAnchor: [0, -25]
-      }),
+      icon: L.AwesomeMarkers.icon({
+            icon: "star",
+            markerColor: "black",
+            prefix: "fa",
+            spin: true
+          }),
       title: feature.properties.Name,
       riseOnHover: true
     });
