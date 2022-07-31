@@ -1,0 +1,11 @@
+{
+"type": "FeatureCollection",
+"name": "stasiun",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "Id": 0.0, "Nama": "Stasiun Tugu (Yogyakarta)", "Gambar": "D:\\_LATSAR CPNS MEI-AGUSTUS\\_AKTUALISASI WINARNI\\gambar webgis dari Web Dinpar\\stasiun tugu.jpeg", "Kunjungi": "https:\/\/pariwisata.jogjakota.go.id\/detail\/index\/848" }, "geometry": { "type": "Point", "coordinates": [ 110.363319646581786, -7.789207365564262 ] } },
+{ "type": "Feature", "properties": { "Id": 0.0, "Nama": "Stasiun Lempuyangan", "Gambar": "D:\\_LATSAR CPNS MEI-AGUSTUS\\_AKTUALISASI WINARNI\\gambar webgis dari Web Dinpar\\stasiun lempuyangan.jpg", "Kunjungi": "https:\/\/id.wikipedia.org\/wiki\/Stasiun_Lempuyangan" }, "geometry": { "type": "Point", "coordinates": [ 110.375788022252337, -7.789968793086117 ] } },
+{ "type": "Feature", "properties": { "Id": 0.0, "Nama": "Stasiun Maguwo", "Gambar": "D:\\_LATSAR CPNS MEI-AGUSTUS\\_AKTUALISASI WINARNI\\gambar webgis dari Web Dinpar\\stasiun maguwo.jpg", "Kunjungi": "https:\/\/id.wikipedia.org\/wiki\/Stasiun_Maguwo" }, "geometry": { "type": "Point", "coordinates": [ 110.436167035632394, -7.783774009125099 ] } },
+{ "type": "Feature", "properties": { "Id": 0.0, "Nama": "Stasiun Prambanan", "Gambar": "D:\\_LATSAR CPNS MEI-AGUSTUS\\_AKTUALISASI WINARNI\\gambar webgis dari Web Dinpar\\stasiun prambanan.jpg", "Kunjungi": "https:\/\/id.wikipedia.org\/wiki\/Stasiun_Brambanan" }, "geometry": { "type": "Point", "coordinates": [ 110.499465457309583, -7.756336444266767 ] } }
+]
+}

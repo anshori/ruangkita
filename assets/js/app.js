@@ -83,7 +83,7 @@ function syncSidebar() {
   wisatajogja.eachLayer(function (layer) {
     if (map.hasLayer(wisatajogjaLayer)) {
       if (map.getBounds().contains(layer.getLatLng())) {
-        $("#feature-list tbody").append('<tr class="feature-row" id="' + L.stamp(layer) + '" lat="' + layer.getLatLng().lat + '" lng="' + layer.getLatLng().lng + '"><td style="vertical-align: middle;"><img width="23" height="32" src="assets/img/dot_pinlet.png"></td><td class="feature-name">' + layer.feature.properties.Name + '</td><td style="vertical-align: middle;"><i class="fa fa-chevron-right pull-right"></i></td></tr>');
+        $("#feature-list tbody").append('<tr class="feature-row" id="' + L.stamp(layer) + '" lat="' + layer.getLatLng().lat + '" lng="' + layer.getLatLng().lng + '"><td style="vertical-align: middle;"><img width="23" height="32" src="assets/img/dot_pinlet.png"></td><td class="feature-name">' + layer.feature.properties.Nama + '</td><td style="vertical-align: middle;"><i class="fa fa-chevron-right pull-right"></i></td></tr>');
       }
     }
   });
@@ -157,13 +157,47 @@ var jogja = L.geoJson(null, {
         $("#feature-title").html("Kecamatan " + feature.properties.KECAMATAN);
         $("#feature-info").html(content);
         $("#featureModal").modal("show");
-        map.setView([e.latlng.lat, e.latlng.lng], 14);
+        //map.setView([e.latlng.lat, e.latlng.lng], 14);
       },
     });
   }
 });
 $.getJSON("data/diy.geojson", function (data) {
   jogja.addData(data);
+});
+
+var transjogja = L.geoJson(null, {
+  onEachFeature: function (feature, layer) {
+    var content = '<table class="table table-striped table-bordered table-sm">' +
+      '<tr><th>Nama</th><td>' + feature.properties.Nama + '</tr>' +
+      '</table>';
+    layer.on({
+      mouseover: function (e) { 
+        var layer = e.target;
+        layer.setStyle({ 
+          weight: 1, 
+          color: "gray", 
+          opacity: 1,
+          fillColor: "cyan",
+          fillOpacity: 0.7, 
+        });
+        jogja.bindTooltip(feature.properties.Nama, {sticky: true});
+      },
+      mouseout: function (e) { 
+        transjogja.resetStyle(e.target);
+        map.closePopup();
+      },
+      click: function (e) {
+        $("#feature-title-trans").html(feature.properties.Nama);
+        $("#feature-info-trans").html(content);
+        $("#featureModalLine").modal("show");
+        //map.setView([e.latlng.lat, e.latlng.lng], 14);
+      },
+    });
+  }
+});
+$.getJSON("data/transjogja.geojson", function (data) {
+  transjogja.addData(data);
 });
 
 /* Single marker cluster layer to hold all clusters */
@@ -182,29 +216,29 @@ var wisatajogja = L.geoJson(null, {
     return L.marker(latlng, {
       icon: L.AwesomeMarkers.icon({
             icon: "star",
-            markerColor: "black",
+            markerColor: "blue",
             prefix: "fa",
             spin: true
           }),
-      title: feature.properties.Name,
+      title: feature.properties.Nama,
       riseOnHover: true
     });
   },
   onEachFeature: function (feature, layer) {
     if (feature.properties) {
-      var content = "<table class='table table-striped table-bordered table-condensed'>" + "<tr><th>Nama</th><td>" + feature.properties.Name + "</td></tr>" + "<tr><th>Deskripsi</th><td>" + feature.properties.Description + "</td></tr>" + "<tr><th>Rute</th><td><a href='https://www.google.com/maps/dir/?api=1&destination=" + feature.geometry.coordinates[1] + "," + feature.geometry.coordinates[0] + "' target='_blank' class='btn btn-info' title='Google Maps'>Google Maps</a><br><a href='http://maps.google.com/maps?q=&layer=c&cbll=" + feature.geometry.coordinates[1] + "," + feature.geometry.coordinates[0] + "' target='_blank' class='btn btn-info' title='Google Street View' style='margin-top:5px'>Street View</a></td></tr><table>";
+      var content = "<table class='table table-striped table-bordered table-condensed'>" + "<tr><th>Nama</th><td>" + feature.properties.Nama + "</td></tr>" + "<tr><th>Deskripsi</th><td>" + feature.properties.Indo + "<tr><th>Tiket</th><td>" + feature.properties.Tiket + "<tr><th>Open</th><td>" + feature.properties.Open + "<tr><th>Website</th><td><a href='"+feature.properties.Web+"'>Kunjungi Website</a></td></tr>" + "<tr><th>Rute</th><td><a href='https://www.google.com/maps/dir/?api=1&destination=" + feature.geometry.coordinates[1] + "," + feature.geometry.coordinates[0] + "' target='_blank' class='btn btn-info' title='Google Maps'>Google Maps</a><br><a href='http://maps.google.com/maps?q=&layer=c&cbll=" + feature.geometry.coordinates[1] + "," + feature.geometry.coordinates[0] + "' target='_blank' class='btn btn-info' title='Google Street View' style='margin-top:5px'>Street View</a></td></tr><table>";
       layer.on({
         click: function (e) {
-          $("#feature-title").html(feature.properties.Name);
+          $("#feature-title").html(feature.properties.Nama);
           $("#feature-info").html(content);
           $("#featureModal").modal("show");
           highlight.clearLayers().addLayer(L.circleMarker([feature.geometry.coordinates[1], feature.geometry.coordinates[0]], highlightStyle));
         }
       });
-      $("#feature-list tbody").append('<tr class="feature-row" id="' + L.stamp(layer) + '" lat="' + layer.getLatLng().lat + '" lng="' + layer.getLatLng().lng + '"><td style="vertical-align: middle;"><img width="23" height="32" src="assets/img/dot_pinlet.png"></td><td class="feature-name">' + layer.feature.properties.Name + '</td><td style="vertical-align: middle;"><i class="fa fa-chevron-right pull-right"></i></td></tr>');
+      $("#feature-list tbody").append('<tr class="feature-row" id="' + L.stamp(layer) + '" lat="' + layer.getLatLng().lat + '" lng="' + layer.getLatLng().lng + '"><td style="vertical-align: middle;"><img width="23" height="32" src="assets/img/dot_pinlet.png"></td><td class="feature-name">' + layer.feature.properties.Nama + '</td><td style="vertical-align: middle;"><i class="fa fa-chevron-right pull-right"></i></td></tr>');
       wisatajogjaSearch.push({
-        name: layer.feature.properties.Name,
-        source: "Jogja",
+        name: layer.feature.properties.Nama,
+        source: "Wisata Jogja",
         id: L.stamp(layer),
         lat: layer.feature.geometry.coordinates[1],
         lng: layer.feature.geometry.coordinates[0]
@@ -212,15 +246,15 @@ var wisatajogja = L.geoJson(null, {
     }
   }
 });
-$.getJSON("data/wisatajogja.geojson", function (data) {
+$.getJSON("data/wisata.geojson", function (data) {
   wisatajogja.addData(data);
   map.addLayer(wisatajogjaLayer);
 });
 
 map = L.map("map", {
-  zoom: 9,
+  zoom: 12,
   center: [-7.801389645,110.364775452],
-  layers: [cartoLight, jogja, markerClusters, highlight],
+  layers: [cartoLight, transjogja, markerClusters],
   zoomControl: false,
   attributionControl: true
 });
@@ -323,6 +357,9 @@ var groupedOverlays = {
   "Points of Interest": {
     "Wisata Yogyakarta": wisatajogjaLayer,
   },
+  "Nearby": {
+    "Rute Trans Jogja": transjogja,
+  },
   "Peta Administrasi": {
     "Provinsi DI. Yogyakarta": jogja,
   }
@@ -360,7 +397,7 @@ $(document).one("ajaxStop", function () {
   var jogjaBH = new Bloodhound({
     name: "jogja",
     datumTokenizer: function (d) {
-      return Bloodhound.tokenizers.whitespace(d.name);
+      return Bloodhound.tokenizers.whitespace(d.Nama);
     },
     queryTokenizer: Bloodhound.tokenizers.whitespace,
     local: jogjaSearch,
@@ -368,9 +405,9 @@ $(document).one("ajaxStop", function () {
   });
   
   var wisatajogjaBH = new Bloodhound({
-    name: "wisata jogja",
+    name: "Wisata Jogja",
     datumTokenizer: function (d) {
-      return Bloodhound.tokenizers.whitespace(d.name);
+      return Bloodhound.tokenizers.whitespace(d.Nama);
     },
     queryTokenizer: Bloodhound.tokenizers.whitespace,
     local: wisatajogjaSearch,
@@ -421,7 +458,7 @@ $(document).one("ajaxStop", function () {
     displayKey: "name",
     source: jogjaBH.ttAdapter(),
     templates: {
-      header: "<h4 class='typeahead-header'>Kota jogja</h4>"
+      header: "<h4 class='typeahead-header'>Kota Jogja</h4>"
     }
   }, {
     name: "Jogja",
