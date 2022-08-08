@@ -1,4 +1,4 @@
-var map, featureList, jogjaSearch = [], wisatajogjaSearch = [];
+var map, featureList, surakartaSearch = [], sukoharjoSearch = [], klatenSearch = [], karanganyarSearch = [], sragenSearch = [], boyolaliSearch = [], wonogiriSearch = [],  wisataSearch = [], wisatajogjaSearch = [];
 
 $(window).resize(function() {
   sizeLayerControl();
@@ -22,20 +22,14 @@ $("#about-btn").click(function() {
   $(".navbar-collapse.in").collapse("hide");
   return false;
 });
+
+$('#blog-click').click(function () {
+    $('#search-wrap #hidden-div').animate({'width': 'toggle'});
+    $(this).toggleClass('clientsClose');
+});
       
 $("#list-btn").click(function() {
   animateSidebar();
-  return false;
-});
-
-$("#legend-btn").click(function() {
-  $("#legendModal").modal("show");
-  $(".navbar-collapse.in").collapse("hide");
-  return false;
-});
-
-$("#nav-btn").click(function() {
-  $(".navbar-collapse").collapse("toggle");
   return false;
 });
 
@@ -80,10 +74,17 @@ function syncSidebar() {
   /* Empty sidebar features */
   $("#feature-list tbody").empty();
   /* Loop through wisata layer and add only features which are in the map bounds */
+  wisata.eachLayer(function (layer) {
+    if (map.hasLayer(wisataLayer)) {
+      if (map.getBounds().contains(layer.getLatLng())) {
+        $("#feature-list tbody").append('<tr class="feature-row" id="' + L.stamp(layer) + '" lat="' + layer.getLatLng().lat + '" lng="' + layer.getLatLng().lng + '"><td style="vertical-align: middle;"><img width="18" height="18" src="assets/img/pin.png"></td><td class="feature-name">' + layer.feature.properties.Name + '</td><td style="vertical-align: middle;"><i class="fa fa-chevron-right pull-right"></i></td></tr>');
+      }
+    }
+  });
   wisatajogja.eachLayer(function (layer) {
     if (map.hasLayer(wisatajogjaLayer)) {
       if (map.getBounds().contains(layer.getLatLng())) {
-        $("#feature-list tbody").append('<tr class="feature-row" id="' + L.stamp(layer) + '" lat="' + layer.getLatLng().lat + '" lng="' + layer.getLatLng().lng + '"><td style="vertical-align: middle;"><img width="23" height="32" src="assets/img/dot_pinlet.png"></td><td class="feature-name">' + layer.feature.properties.Nama + '</td><td style="vertical-align: middle;"><i class="fa fa-chevron-right pull-right"></i></td></tr>');
+        $("#feature-list tbody").append('<tr class="feature-row" id="' + L.stamp(layer) + '" lat="' + layer.getLatLng().lat + '" lng="' + layer.getLatLng().lng + '"><td style="vertical-align: middle;"><img width="18" height="18" src="assets/img/pin.png"></td><td class="feature-name">' + layer.feature.properties.Name + '</td><td style="vertical-align: middle;"><i class="fa fa-chevron-right pull-right"></i></td></tr>');
       }
     }
   });
@@ -99,10 +100,10 @@ function syncSidebar() {
 /* Basemap Layers */
 var cartoLight = L.tileLayer("https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png", {
   maxZoom: 19,
-  attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> | &copy; <a href="https://cartodb.com/attributions">CartoDB</a> | <a href="http://www.github.com/maspannn">Mas Pannn</a>'
+  attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://cartodb.com/attributions">CartoDB</a>'
 });
 var google = L.tileLayer('https://mt0.google.com/vt/lyrs=r&hl=en&x={x}&y={y}&z={z}', {
-  attribution: 'Google Street | <a href="https://maspannn.github.io" target="_blank">Mas Pannn</a>'
+  attribution: '<a href="https://maspannn.github.io" target="_blank">Mas Pannn</a>'
 });
 
 /* Overlay Layers */
@@ -114,12 +115,80 @@ var highlightStyle = {
   radius: 10
 };
 
-var jogjaColors = {"Tinggi":"#bd0026", "Sedang":"#fd8d3c", "Rendah":"#ffffb2"};
+var surakartaColors = {
+  "Banjarsari":"#D9D387", 
+  "Jebres":"#E8BB0A", 
+  "Laweyan":"#BCDECA",
+  "Pasar Kliwon":"#85C4CF",
+  "Serengan":"#DF8DA9",
+};
 
-var jogja = L.geoJson(null, {
+var surakarta = L.geoJson(null, {
   style: function (feature) {
     return {
-      fillColor: jogjaColors[feature.properties.klas_jml],
+      fillColor: surakartaColors[feature.properties.kecamatan],
+      fillOpacity: 0.7,
+      color: "gray",
+      weight: 1,
+      opacity: 1,
+    };
+  },
+  onEachFeature: function (feature, layer) {
+    var content = '<div class="mb-2"><b>Detail Administrasi</b></div><table class="table table-striped table-bordered table-sm">' +
+      '<tr><th>Provinsi</th><td>' + feature.properties.provinsi + '</tr>' +
+      '<tr><th>Kota</th><td>' + feature.properties.kabupaten + '</tr>' +
+      '<tr><th>Kecamatan</th><td>' + feature.properties.kecamatan + '</tr>' +
+      '<tr><th>Kelurahan</th><td>' + feature.properties.desa + '</tr>' +
+      '<tr><th>Kode Kemendagri</th><td>' + feature.properties.kode_dagri + '</tr>' +
+      '</table>' +
+      '<small class="mt-3 text-primary">Sumber: <a class="link-success" href="http://Geoportal Provinsi.jatengprov.go.id/" target="_blank">Geoportal Provinsi Jawa Tengah</a></small>';
+    layer.on({
+      mouseover: function (e) { 
+        var layer = e.target;
+        layer.setStyle({ 
+          weight: 1, 
+          color: "gray", 
+          opacity: 1,
+          fillColor: "cyan",
+          fillOpacity: 0.7, 
+        });
+        surakarta.bindTooltip("Kel. " + feature.properties.desa + ", Kec. " + feature.properties.kecamatan , {sticky: true});
+      },
+      mouseout: function (e) { 
+        surakarta.resetStyle(e.target);
+        map.closePopup();
+      },
+      click: function (e) {
+        $("#feature-title").html("Kelurahan " + feature.properties.desa);
+        $("#feature-info").html(content);
+        $("#featureModal").modal("show");
+        map.setView([e.latlng.lat, e.latlng.lng], 14);
+      },
+    });
+  }
+});
+$.getJSON("data/surakarta.geojson", function (data) {
+  surakarta.addData(data);
+});
+
+var sukoharjoColors = {
+  "Bendosari":"#ADEDD2", 
+  "Gatak":"#E9E27B", 
+  "Mojolaban":"#76F6D7",
+  "Baki":"#97EC84",
+  "Kartasura":"#D4ED90",
+  "Weru":"#D782F4",
+  "Bulu":"#EF88AE",
+  "Sukoharjo":"#F1B676",
+  "Tawangsari":"#A47EF3",
+  "Polokarto":"#F6B2D4",
+  "Grogol":"#7AC3F4",
+  "Nguter":"#7480F4",
+};
+var sukoharjo = L.geoJson(null, {
+  style: function (feature) {
+    return {
+      fillColor: sukoharjoColors[feature.properties.kecamatan],
       fillOpacity: 0.7,
       color: "gray",
       weight: 1,
@@ -128,15 +197,13 @@ var jogja = L.geoJson(null, {
   },
   onEachFeature: function (feature, layer) {
     var content = '<table class="table table-striped table-bordered table-sm">' +
-      '<tr><th>Kabupaten</th><td>' + feature.properties.KABUPATEN + '</tr>' +
-      '<tr><th>Jumlah Laki-laki</th><td>' + feature.properties.LAKI_LAKI + ' Jiwa</tr>' +
-      '<tr><th>Jumlah Perempuan</th><td>' + feature.properties.PEREMPUAN + ' Jiwa</tr>' +
-      '<tr><th>Jumlah Penduduk</th><td>' + feature.properties.JML_PDD + ' Jiwa</tr>' +
-      '<tr><th>Jumlah Keluarga</th><td>' + feature.properties.KK + '</tr>' +
-      '<tr><th>Luas</th><td>' + feature.properties.Luas_km2 + ' Km<sup>2</sup></tr>' +
-      '<tr><th>Kepadatan Penduduk</th><td>' + feature.properties.KPDT_PDD + ' Jiwa/Km<sup>2</sup></tr>' +
+      '<tr><th>Provinsi</th><td>' + feature.properties.provinsi + '</tr>' +
+      '<tr><th>Kabupaten</th><td>' + feature.properties.kabupaten + '</tr>' +
+      '<tr><th>Kecamatan</th><td>' + feature.properties.kecamatan + '</tr>' +
+      '<tr><th>Desa</th><td>' + feature.properties.desa + '</tr>' +
+      '<tr><th>Kode Kemendagri</th><td>' + feature.properties.kode_dagri + '</tr>' +
       '</table>' +
-      '<small class="text-primary">Sumber: PODES BPS 2011</small>';
+      '<small class="text-primary">Sumber: Geoportal Provinsi Jawa Tengah</small>';
     layer.on({
       mouseover: function (e) { 
         var layer = e.target;
@@ -147,30 +214,74 @@ var jogja = L.geoJson(null, {
           fillColor: "cyan",
           fillOpacity: 0.7, 
         });
-        jogja.bindTooltip("Kel. " + feature.properties.desa + ", Kec. " + feature.properties.kecamatan , {sticky: true});
+        sukoharjo.bindTooltip("Desa " + feature.properties.desa + ", Kec. " + feature.properties.kecamatan , {sticky: true});
       },
       mouseout: function (e) { 
-        jogja.resetStyle(e.target);
+        sukoharjo.resetStyle(e.target);
         map.closePopup();
       },
       click: function (e) {
-        $("#feature-title").html("Kecamatan " + feature.properties.KECAMATAN);
+        $("#feature-title").html("Desa " + feature.properties.desa);
         $("#feature-info").html(content);
         $("#featureModal").modal("show");
-        //map.setView([e.latlng.lat, e.latlng.lng], 14);
+        map.setView([e.latlng.lat, e.latlng.lng], 14);
       },
     });
   }
 });
-$.getJSON("data/diy.geojson", function (data) {
-  jogja.addData(data);
+
+$.getJSON("data/sukoharjo.geojson", function (data) {
+  sukoharjo.addData(data);
+  map.fitBounds(sukoharjo.getBounds());
 });
 
-var transjogja = L.geoJson(null, {
+var klatenColors = {
+  "Bayat":"#ADEDD2", 
+  "Cawas":"#E9E27B", 
+  "Ceper":"#76F6D7",
+  "Delanggu":"#97EC84",
+  "Gantiwarno":"#D4ED90",
+  "Jatinom":"#D782F4",
+  "Jogonalan":"#EF88AE",
+  "Juwiring":"#F1B676",
+  "Kalikotes":"#A47EF3",
+  "Karanganom":"#F6B2D4",
+  "Karangdowo":"#7AC3F4",
+  "Karangnongko":"#7480F4",
+  "Kebonarum":"#C71585",
+  "Kemalang":"#8B4513",
+  "Klaten Selatan":"#FFE4E1",
+  "Klaten Tengah":"#B0C4DE",
+  "Klaten Utara":"#F0FFF0",
+  "Manisrenggo":"#483D8B",
+  "Ngawen":"#00008B",
+  "Pedan":"#5F9EA0",
+  "Polanharjo":"#B0E0E6",
+  "Prambanan":"#00FF00",
+  "Trucuk":"#FF8C00",
+  "Tulung":"#DC143C",
+  "Wedi":"#800000",
+  "Wonosari":"#FFFAFA",
+};
+var klaten = L.geoJson(null, {
+  style: function (feature) {
+    return {
+      fillColor: klatenColors[feature.properties.kecamatan],
+      fillOpacity: 0.7,
+      color: "gray",
+      weight: 1,
+      opacity: 1,
+    };
+  },
   onEachFeature: function (feature, layer) {
     var content = '<table class="table table-striped table-bordered table-sm">' +
-      '<tr><th>Nama</th><td>' + feature.properties.Nama + '</tr>' +
-      '</table>';
+      '<tr><th>Provinsi</th><td>' + feature.properties.provinsi + '</tr>' +
+      '<tr><th>Kabupaten</th><td>' + feature.properties.kabupaten + '</tr>' +
+      '<tr><th>Kecamatan</th><td>' + feature.properties.kecamatan + '</tr>' +
+      '<tr><th>Desa</th><td>' + feature.properties.desa + '</tr>' +
+      '<tr><th>Kode Kemendagri</th><td>' + feature.properties.kode_dagri + '</tr>' +
+      '</table>' +
+      '<small class="text-primary">Sumber: Geoportal Provinsi Jawa Tengah</small>';
     layer.on({
       mouseover: function (e) { 
         var layer = e.target;
@@ -181,23 +292,310 @@ var transjogja = L.geoJson(null, {
           fillColor: "cyan",
           fillOpacity: 0.7, 
         });
-        jogja.bindTooltip(feature.properties.Nama, {sticky: true});
+        klaten.bindTooltip("Desa " + feature.properties.desa + ", Kec. " + feature.properties.kecamatan , {sticky: true});
       },
       mouseout: function (e) { 
-        transjogja.resetStyle(e.target);
+        klaten.resetStyle(e.target);
         map.closePopup();
       },
       click: function (e) {
-        $("#feature-title-trans").html(feature.properties.Nama);
-        $("#feature-info-trans").html(content);
-        $("#featureModalLine").modal("show");
-        //map.setView([e.latlng.lat, e.latlng.lng], 14);
+        $("#feature-title").html("Desa " + feature.properties.desa);
+        $("#feature-info").html(content);
+        $("#featureModal").modal("show");
+        map.setView([e.latlng.lat, e.latlng.lng], 14);
       },
     });
   }
 });
-$.getJSON("data/transjogja.geojson", function (data) {
-  transjogja.addData(data);
+
+$.getJSON("data/klaten.geojson", function (data) {
+  klaten.addData(data);
+});
+
+var karanganyarColors = {
+  "Colomadu":"#ADEDD2", 
+  "Gondangrejo":"#E9E27B", 
+  "Jaten":"#76F6D7",
+  "Jatipuro":"#97EC84",
+  "Jatiyoso":"#D4ED90",
+  "Jenawi":"#D782F4",
+  "Jumantono":"#EF88AE",
+  "Jumapolo":"#F1B676",
+  "Karanganyar":"#A47EF3",
+  "Karangpandan":"#F6B2D4",
+  "Kebakkramat":"#7AC3F4",
+  "Kerjo":"#7480F4",
+  "Matesih":"#C71585",
+  "Mojogedang":"#8B4513",
+  "Ngargoyoso":"#FFE4E1",
+  "Tasikmadu":"#B0C4DE",
+  "Tawangmangu":"#F0FFF0",
+};
+var karanganyar = L.geoJson(null, {
+  style: function (feature) {
+    return {
+      fillColor: karanganyarColors[feature.properties.kecamatan],
+      fillOpacity: 0.7,
+      color: "gray",
+      weight: 1,
+      opacity: 1,
+    };
+  },
+  onEachFeature: function (feature, layer) {
+    var content = '<table class="table table-striped table-bordered table-sm">' +
+      '<tr><th>Provinsi</th><td>' + feature.properties.provinsi + '</tr>' +
+      '<tr><th>Kabupaten</th><td>' + feature.properties.kabupaten + '</tr>' +
+      '<tr><th>Kecamatan</th><td>' + feature.properties.kecamatan + '</tr>' +
+      '<tr><th>Desa</th><td>' + feature.properties.desa + '</tr>' +
+      '<tr><th>Kode Kemendagri</th><td>' + feature.properties.kode_dagri + '</tr>' +
+      '</table>' +
+      '<small class="text-primary">Sumber: Geoportal Provinsi Jawa Tengah</small>';
+    layer.on({
+      mouseover: function (e) { 
+        var layer = e.target;
+        layer.setStyle({ 
+          weight: 1, 
+          color: "gray", 
+          opacity: 1,
+          fillColor: "cyan",
+          fillOpacity: 0.7, 
+        });
+        karanganyar.bindTooltip("Desa " + feature.properties.desa + ", Kec. " + feature.properties.kecamatan , {sticky: true});
+      },
+      mouseout: function (e) { 
+        karanganyar.resetStyle(e.target);
+        map.closePopup();
+      },
+      click: function (e) {
+        $("#feature-title").html("Desa " + feature.properties.desa);
+        $("#feature-info").html(content);
+        $("#featureModal").modal("show");
+        map.setView([e.latlng.lat, e.latlng.lng], 14);
+      },
+    });
+  }
+});
+
+$.getJSON("data/karanganyar.geojson", function (data) {
+  karanganyar.addData(data);
+});
+
+var sragenColors = {
+  "Gemolong":"#ADEDD2", 
+  "Gesi":"#E9E27B", 
+  "Gondang":"#76F6D7",
+  "Jenar":"#97EC84",
+  "Kalijambe":"#D4ED90",
+  "Karangmalang":"#D782F4",
+  "Kedawung":"#EF88AE",
+  "Masaran":"#F1B676",
+  "Miri":"#A47EF3",
+  "Mondokan":"#F6B2D4",
+  "Ngrampal":"#7AC3F4",
+  "Plupuh":"#7480F4",
+  "Sambirejo":"#C71585",
+  "Sambungmacan":"#8B4513",
+  "Sidoharjo":"#FFE4E1",
+  "Sragen":"#B0C4DE",
+  "Sukodono":"#F0FFF0",
+  "Sumberlawang":"#DC143C",
+  "Tangen":"#800000",
+  "Tanon":"#FFFAFA",
+};
+var sragen = L.geoJson(null, {
+  style: function (feature) {
+    return {
+      fillColor: sragenColors[feature.properties.kecamatan],
+      fillOpacity: 0.7,
+      color: "gray",
+      weight: 1,
+      opacity: 1,
+    };
+  },
+  onEachFeature: function (feature, layer) {
+    var content = '<table class="table table-striped table-bordered table-sm">' +
+      '<tr><th>Provinsi</th><td>' + feature.properties.provinsi + '</tr>' +
+      '<tr><th>Kabupaten</th><td>' + feature.properties.kabupaten + '</tr>' +
+      '<tr><th>Kecamatan</th><td>' + feature.properties.kecamatan + '</tr>' +
+      '<tr><th>Desa</th><td>' + feature.properties.desa + '</tr>' +
+      '<tr><th>Kode Kemendagri</th><td>' + feature.properties.kode_dagri + '</tr>' +
+      '</table>' +
+      '<small class="text-primary">Sumber: Geoportal Provinsi Jawa Tengah</small>';
+    layer.on({
+      mouseover: function (e) { 
+        var layer = e.target;
+        layer.setStyle({ 
+          weight: 1, 
+          color: "gray", 
+          opacity: 1,
+          fillColor: "cyan",
+          fillOpacity: 0.7, 
+        });
+        sragen.bindTooltip("Desa " + feature.properties.desa + ", Kec. " + feature.properties.kecamatan , {sticky: true});
+      },
+      mouseout: function (e) { 
+        sragen.resetStyle(e.target);
+        map.closePopup();
+      },
+      click: function (e) {
+        $("#feature-title").html("Desa " + feature.properties.desa);
+        $("#feature-info").html(content);
+        $("#featureModal").modal("show");
+        map.setView([e.latlng.lat, e.latlng.lng], 14);
+      },
+    });
+  }
+});
+
+$.getJSON("data/sragen.geojson", function (data) {
+  sragen.addData(data);
+});
+
+var boyolaliColors = {
+  "Ampel":"#ADEDD2", 
+  "Andong":"#E9E27B", 
+  "Banyudono":"#76F6D7",
+  "Boyolali":"#97EC84",
+  "Cepogo":"#D4ED90",
+  "Juwangi":"#D782F4",
+  "Karanggede":"#EF88AE",
+  "Kemusu":"#F1B676",
+  "Klego":"#A47EF3",
+  "Mojosongo":"#F6B2D4",
+  "Musuk":"#7AC3F4",
+  "Ngemplak":"#7480F4",
+  "Nogosari":"#C71585",
+  "Sambi":"#8B4513",
+  "Sawit":"#FFE4E1",
+  "Selo":"#B0C4DE",
+  "Simo":"#F0FFF0",
+  "Teras":"#483D8B",
+  "Wonosegoro":"#00008B",
+};
+var boyolali = L.geoJson(null, {
+  style: function (feature) {
+    return {
+      fillColor: boyolaliColors[feature.properties.kecamatan],
+      fillOpacity: 0.7,
+      color: "gray",
+      weight: 1,
+      opacity: 1,
+    };
+  },
+  onEachFeature: function (feature, layer) {
+    var content = '<table class="table table-striped table-bordered table-sm">' +
+      '<tr><th>Provinsi</th><td>' + feature.properties.provinsi + '</tr>' +
+      '<tr><th>Kabupaten</th><td>' + feature.properties.kabupaten + '</tr>' +
+      '<tr><th>Kecamatan</th><td>' + feature.properties.kecamatan + '</tr>' +
+      '<tr><th>Desa</th><td>' + feature.properties.desa + '</tr>' +
+      '<tr><th>Kode Kemendagri</th><td>' + feature.properties.kode_dagri + '</tr>' +
+      '</table>' +
+      '<small class="text-primary">Sumber: Geoportal Provinsi Jawa Tengah</small>';
+    layer.on({
+      mouseover: function (e) { 
+        var layer = e.target;
+        layer.setStyle({ 
+          weight: 1, 
+          color: "gray", 
+          opacity: 1,
+          fillColor: "cyan",
+          fillOpacity: 0.7, 
+        });
+        boyolali.bindTooltip("Desa " + feature.properties.desa + ", Kec. " + feature.properties.kecamatan , {sticky: true});
+      },
+      mouseout: function (e) { 
+        boyolali.resetStyle(e.target);
+        map.closePopup();
+      },
+      click: function (e) {
+        $("#feature-title").html("Desa " + feature.properties.desa);
+        $("#feature-info").html(content);
+        $("#featureModal").modal("show");
+        map.setView([e.latlng.lat, e.latlng.lng], 14);
+      },
+    });
+  }
+});
+
+$.getJSON("data/boyolali.geojson", function (data) {
+  boyolali.addData(data);
+});
+
+var wonogiriColors = {
+  "Baturetno":"#ADEDD2", 
+  "Batuwarno":"#E9E27B", 
+  "Bulukerto":"#76F6D7",
+  "Eromoko":"#97EC84",
+  "Girimarto":"#D4ED90",
+  "Giritontro":"#D782F4",
+  "Giriwoyo":"#EF88AE",
+  "Jatipurno":"#F1B676",
+  "Jatiroto":"#A47EF3",
+  "Jatisrono":"#F6B2D4",
+  "Kismantoro":"#7AC3F4",
+  "Manyaran":"#7480F4",
+  "Ngadirojo":"#C71585",
+  "Nguntoronadi":"#8B4513",
+  "Paranggupito":"#FFE4E1",
+  "Pracimantoro":"#B0C4DE",
+  "Puhpelem":"#F0FFF0",
+  "Purwantoro":"#483D8B",
+  "Selogiri":"#00008B",
+  "Sidoarjo":"#5F9EA0",
+  "Slogohimo":"#B0E0E6",
+  "Tirtomoyo":"#00FF00",
+  "Wonogiri":"#FF8C00",
+  "Wuryantoro":"#DC143C",
+  "Karangtengah":"#800000",
+};
+
+var wonogiri = L.geoJson(null, {
+  style: function (feature) {
+    return {
+      fillColor: wonogiriColors[feature.properties.kecamatan],
+      fillOpacity: 0.7,
+      color: "gray",
+      weight: 1,
+      opacity: 1,
+    };
+  },
+  onEachFeature: function (feature, layer) {
+    var content = '<table class="table table-striped table-bordered table-sm">' +
+      '<tr><th>Provinsi</th><td>' + feature.properties.provinsi + '</tr>' +
+      '<tr><th>Kabupaten</th><td>' + feature.properties.kabupaten + '</tr>' +
+      '<tr><th>Kecamatan</th><td>' + feature.properties.kecamatan + '</tr>' +
+      '<tr><th>Desa</th><td>' + feature.properties.desa + '</tr>' +
+      '<tr><th>Kode Kemendagri</th><td>' + feature.properties.kode_dagri + '</tr>' +
+      '</table>' +
+      '<small class="text-primary">Sumber: Geoportal Provinsi Jawa Tengah</small>';
+    layer.on({
+      mouseover: function (e) { 
+        var layer = e.target;
+        layer.setStyle({ 
+          weight: 1, 
+          color: "gray", 
+          opacity: 1,
+          fillColor: "cyan",
+          fillOpacity: 0.7, 
+        });
+        wonogiri.bindTooltip("Desa " + feature.properties.desa + ", Kec. " + feature.properties.kecamatan , {sticky: true});
+      },
+      mouseout: function (e) { 
+        wonogiri.resetStyle(e.target);
+        map.closePopup();
+      },
+      click: function (e) {
+        $("#feature-title").html("Desa " + feature.properties.desa);
+        $("#feature-info").html(content);
+        $("#featureModal").modal("show");
+        map.setView([e.latlng.lat, e.latlng.lng], 14);
+      },
+    });
+  }
+});
+
+$.getJSON("data/wonogiri.geojson", function (data) {
+  wonogiri.addData(data);
 });
 
 /* Single marker cluster layer to hold all clusters */
@@ -208,37 +606,38 @@ var markerClusters = new L.MarkerClusterGroup({
   disableClusteringAtZoom: 16
 });
 
-
 /* Empty layer placeholder to add to layer control for listening when to add/remove wisata to markerClusters layer */
-var wisatajogjaLayer = L.geoJson(null);
-var wisatajogja = L.geoJson(null, {
+var wisataLayer = L.geoJson(null);
+var wisata = L.geoJson(null, {
   pointToLayer: function (feature, latlng) {
     return L.marker(latlng, {
-      icon: L.AwesomeMarkers.icon({
-            icon: "star",
-            markerColor: "blue",
-            prefix: "fa",
-            spin: true
-          }),
-      title: feature.properties.Nama,
+      icon: L.icon({
+        iconUrl: "assets/img/pin-2.png",
+        iconSize: [24, 24],
+        iconAnchor: [12, 28],
+        popupAnchor: [0, -25]
+      }),
+      title: feature.properties.Name,
       riseOnHover: true
     });
   },
   onEachFeature: function (feature, layer) {
     if (feature.properties) {
-      var content = "<table class='table table-striped table-bordered table-condensed'>" + "<tr><th>Nama</th><td>" + feature.properties.Nama + "</td></tr>" + "<tr><th>Deskripsi</th><td>" + feature.properties.Indo + "<tr><th>Tiket</th><td>" + feature.properties.Ticket + "<tr><th>Open</th><td>" + feature.properties.Open + "<tr><th>Website</th><td><a href='"+feature.properties.Web+"'>Kunjungi Website</a></td></tr>" + "<tr><th>Rute</th><td><a href='https://www.google.com/maps/dir/?api=1&destination=" + feature.geometry.coordinates[1] + "," + feature.geometry.coordinates[0] + "' target='_blank' class='btn btn-info' title='Google Maps'>Google Maps</a><br><a href='http://maps.google.com/maps?q=&layer=c&cbll=" + feature.geometry.coordinates[1] + "," + feature.geometry.coordinates[0] + "' target='_blank' class='btn btn-info' title='Google Street View' style='margin-top:5px'>Street View</a></td></tr><table>";
+      var content = feature.properties.Description + "<div class='mb-2'><b>Detail POI</b></div><table class='table table-striped table-bordered table-condensed'>" + "<tr><th>Name</th><td>" + feature.properties.Name + "</td></tr><table><hr style='visibility:hidden'><div class='mb-2'><b>Rute</b></div><a href='https://www.google.com/maps/dir/?api=1&destination=" + feature.geometry.coordinates[1] + "," + feature.geometry.coordinates[0] + "' target='_blank' class='btn btn-info' title='Google Maps'>Google Maps</a>&nbsp;&nbsp<a href='http://maps.google.com/maps?q=&layer=c&cbll=" + feature.geometry.coordinates[1] + "," + feature.geometry.coordinates[0] + "' target='_blank' class='btn btn-info' title='Google Street View'>Street View</a>";
       layer.on({
         click: function (e) {
-          $("#feature-title").html(feature.properties.Nama);
-          $("#feature-info").html(content);
-          $("#featureModal").modal("show");
+          $("#feature-title-wisata").html(feature.properties.Name);
+          $("#feature-lat").html(feature.geometry.coordinates[1]);
+          $("#feature-long").html(feature.geometry.coordinates[0]);
+          $("#feature-info-wisata").html(content);
+          $("#featureModalWisata").modal("show");
           highlight.clearLayers().addLayer(L.circleMarker([feature.geometry.coordinates[1], feature.geometry.coordinates[0]], highlightStyle));
         }
       });
-      $("#feature-list tbody").append('<tr class="feature-row" id="' + L.stamp(layer) + '" lat="' + layer.getLatLng().lat + '" lng="' + layer.getLatLng().lng + '"><td style="vertical-align: middle;"><img width="23" height="32" src="assets/img/dot_pinlet.png"></td><td class="feature-name">' + layer.feature.properties.Nama + '</td><td style="vertical-align: middle;"><i class="fa fa-chevron-right pull-right"></i></td></tr>');
-      wisatajogjaSearch.push({
-        name: layer.feature.properties.Nama,
-        source: "Wisata Jogja",
+      $("#feature-list tbody").append('<tr class="feature-row" id="' + L.stamp(layer) + '" lat="' + layer.getLatLng().lat + '" lng="' + layer.getLatLng().lng + '"><td style="vertical-align: middle;"><img width="18" height="18" src="assets/img/pin.png"></td><td class="feature-name">' + layer.feature.properties.Name + '</td><td style="vertical-align: middle;"><i class="fa fa-chevron-right pull-right"></i></td></tr>');
+      wisataSearch.push({
+        name: layer.feature.properties.Name,
+        source: "Jateng",
         id: L.stamp(layer),
         lat: layer.feature.geometry.coordinates[1],
         lng: layer.feature.geometry.coordinates[0]
@@ -246,21 +645,79 @@ var wisatajogja = L.geoJson(null, {
     }
   }
 });
-$.getJSON("data/wisata.geojson", function (data) {
+$.getJSON("data/wisatajateng.geojson", function (data) {
+  wisata.addData(data);
+  map.addLayer(wisataLayer);
+});
+
+var wisatajogjaLayer = L.geoJson(null);
+var wisatajogja = L.geoJson(null, {
+  pointToLayer: function (feature, latlng) {
+    return L.marker(latlng, {
+      icon: L.icon({
+        iconUrl: "assets/img/pin.png",
+        iconSize: [24, 24],
+        iconAnchor: [12, 28],
+        popupAnchor: [0, -25]
+      }),
+      title: feature.properties.Name,
+      riseOnHover: true
+    });
+  },
+  onEachFeature: function (feature, layer) {
+    if (feature.properties) {
+      var content = feature.properties.Description + "<div class='mb-2'><b>Detail POI</b></div><table class='table table-striped table-bordered table-condensed'>" + "<tr><th>Name</th><td>" + feature.properties.Name + "</td></tr><table><hr style='visibility:hidden'><div class='mb-2'><b>Rute</b></div><a href='https://www.google.com/maps/dir/?api=1&destination=" + feature.geometry.coordinates[1] + "," + feature.geometry.coordinates[0] + "' target='_blank' class='btn btn-info' title='Google Maps'>Google Maps</a>&nbsp;&nbsp<a href='http://maps.google.com/maps?q=&layer=c&cbll=" + feature.geometry.coordinates[1] + "," + feature.geometry.coordinates[0] + "' target='_blank' class='btn btn-info' title='Google Street View'>Street View</a>";
+      layer.on({
+        click: function (e) {
+          $("#feature-title-wisata").html(feature.properties.Name);
+          $("#feature-lat").html(feature.geometry.coordinates[1]);
+          $("#feature-long").html(feature.geometry.coordinates[0]);
+          $("#feature-info-wisata").html(content);
+          $("#featureModalWisata").modal("show");
+          highlight.clearLayers().addLayer(L.circleMarker([feature.geometry.coordinates[1], feature.geometry.coordinates[0]], highlightStyle));
+        }
+      });
+      $("#feature-list tbody").append('<tr class="feature-row" id="' + L.stamp(layer) + '" lat="' + layer.getLatLng().lat + '" lng="' + layer.getLatLng().lng + '"><td style="vertical-align: middle;"><img width="18" height="18" src="assets/img/pin.png"></td><td class="feature-name">' + layer.feature.properties.Name + '</td><td style="vertical-align: middle;"><i class="fa fa-chevron-right pull-right"></i></td></tr>');
+      wisatajogjaSearch.push({
+        name: layer.feature.properties.Name,
+        source: "Jogja",
+        id: L.stamp(layer),
+        lat: layer.feature.geometry.coordinates[1],
+        lng: layer.feature.geometry.coordinates[0]
+      });
+    }
+  }
+});
+$.getJSON("data/wisatajogja.geojson", function (data) {
   wisatajogja.addData(data);
   map.addLayer(wisatajogjaLayer);
 });
 
+var agustus22 = new L.LayerGroup();
+var pchags22 = L.tileLayer.wms('http://hidromet.sih3.bmkg.go.id/geoserver/sipitung/wms?', {
+          layers: 'sipitung:PCH_0822_ver05_20220519135812',
+          tiled: true,
+          format: 'image/png',
+          transparent: true,
+          maxZoom: 16,
+          minZoom: 0,
+          continuousWorld: true
+      }).addTo(agustus22);
+
 map = L.map("map", {
   zoom: 12,
-  center: [-7.801389645,110.364775452],
-  layers: [cartoLight, transjogja, markerClusters],
+  center: [-7.56667, 110.81667],
+  layers: [cartoLight, surakarta, markerClusters, highlight],
   zoomControl: false,
-  attributionControl: true
+  attributionControl: false
 });
 
 /* Layer control listeners that allow for a single markerClusters layer */
 map.on("overlayadd", function(e) {
+  if (e.layer === wisataLayer) {
+    markerClusters.addLayer(wisata);
+    syncSidebar();
+  }
   if (e.layer === wisatajogjaLayer) {
     markerClusters.addLayer(wisatajogja);
     syncSidebar();
@@ -268,6 +725,10 @@ map.on("overlayadd", function(e) {
 });
 
 map.on("overlayremove", function(e) {
+  if (e.layer === wisataLayer) {
+    markerClusters.removeLayer(wisata);
+    syncSidebar();
+  }
   if (e.layer === wisatajogjaLayer) {
     markerClusters.removeLayer(wisatajogja);
     syncSidebar();
@@ -283,6 +744,17 @@ map.on("moveend", function (e) {
 map.on("click", function(e) {
   highlight.clearLayers();
 });
+
+/*var info = L.control();
+info.onAdd = function (map) {
+	this._div = L.DomUtil.create('div', 'info');
+	this.update();
+	return this._div;
+};
+info.update = function (props) {
+	this._div.innerHTML = '<form role="search"><div class="form-group has-feedback"><input id="searchbox" type="text" placeholder="Cari POI" class="form-control"><span id="searchicon" class="fa fa-search form-control-feedback" style="display:none"></span></div></form>';
+};
+info.addTo(map);*/
 
 /* Attribution control */
 function updateAttribution(e) {
@@ -305,40 +777,56 @@ attributionControl.onAdd = function (map) {
 };
 map.addControl(attributionControl);
 
-var zoomControl = L.control.zoom({
-  position: "bottomright"
-}).addTo(map);
+var zoomHome = L.Control.zoomHome({
+    position: 'bottomright'
+});
+zoomHome.addTo(map);
+
+map.addControl(new L.Control.Fullscreen({
+    title: {
+      'false': 'View Fullscreen',
+      'true': 'Exit Fullscreen'
+      },
+    position: 'bottomright'
+}));
 
 /* GPS enabled geolocation control set to follow the user's location */
-var locateControl = L.control.locate({
-  position: "bottomright",
-  drawCircle: true,
-  follow: true,
-  setView: true,
-  keepCurrentZoomLevel: true,
-  markerStyle: {
-    weight: 1,
-    opacity: 0.8,
-    fillOpacity: 0.8
-  },
-  circleStyle: {
-    weight: 1,
-    clickable: false
-  },
-  icon: "fa fa-location-arrow",
-  metric: false,
-  strings: {
-    title: "My location",
-    popup: "You are within {distance} {unit} from this point",
-    outsideMapBoundsMsg: "You seem located outside the boundaries of the map"
-  },
-  locateOptions: {
-    maxZoom: 18,
-    watch: true,
-    enableHighAccuracy: true,
-    maximumAge: 10000,
-    timeout: 10000
-  }
+var locateControl = L.control
+  .locate({
+    position: "bottomright",
+    drawCircle: true,
+    follow: true,
+    setView: true,
+    keepCurrentZoomLevel: true,
+    markerStyle: {
+      weight: 1,
+      opacity: 0.8,
+      fillOpacity: 0.8,
+    },
+    circleStyle: {
+      weight: 1,
+      clickable: false,
+    },
+    icon: "fa fa-crosshairs",
+    metric: true,
+    strings: {
+      title: "Lokasi Anda",
+      popup: "Lokasi Anda sekarang di sini<br>Akurasi {distance} {unit}",
+      outsideMapBoundsMsg: "Sepertinya Anda berada di luar batas Peta.",
+    },
+    locateOptions: {
+      maxZoom: 18,
+      watch: true,
+      enableHighAccuracy: true,
+      maximumAge: 10000,
+      timeout: 10000,
+    },
+  })
+  .addTo(map);
+
+L.control.betterscale({
+  metric:true, 
+  imperial: false
 }).addTo(map);
 
 /* Larger screens get expanded layer control and visible sidebar */
@@ -354,14 +842,21 @@ var baseLayers = {
 };
 
 var groupedOverlays = {
-  "Points of Interest": {
-    "Wisata Yogyakarta": wisatajogjaLayer,
+  "<hr><h6>Points of Interest</h6>": {
+    "<img src='assets/img/pin.png' width='24' height='24'>&nbsp;Wisata Jawa Tengah": wisataLayer,
+    "<img src='assets/img/pin.png' width='24' height='24'>&nbsp;Wisata Yogyakarta": wisatajogjaLayer,
   },
-  "Nearby": {
-    "Rute Trans Jogja": transjogja,
+  "<h6>Peta Administrasi<h6>": {
+    "Kota Surakarta": surakarta,
+    "Kabupaten Sukoharjo": sukoharjo,
+    "Kabupaten Klaten": klaten,
+    "Kabupaten Karanganyar": karanganyar,
+    "Kabupaten Boyolali": boyolali,
+    "Kabupaten Sragen": sragen,
+    "Kabupaten Wonogiri": wonogiri,
   },
-  "Peta Administrasi": {
-    "Provinsi DI. Yogyakarta": jogja,
+   "<hr><h6>Prakiraan Curah Hujan</h6>": {
+    "Agustus 2022": agustus22,
   }
 };
 
@@ -384,30 +879,109 @@ $("#searchbox").keypress(function (e) {
 $("#featureModal").on("hidden.bs.modal", function (e) {
   $(document).on("mouseout", ".feature-row", clearHighlight);
 });
+$("#featureModalWisata").on("hidden.bs.modal", function (e) {
+  $(document).on("mouseout", ".feature-row", clearHighlight);
+});
 
 /* Typeahead search functionality */
 $(document).one("ajaxStop", function () {
   $("#loading").hide();
   sizeLayerControl();
-  /* Fit map to jogja bounds */
-  map.fitBounds(jogja.getBounds());
+  /* Fit map to surakarta bounds */
+  map.fitBounds(surakarta.getBounds());
+  map.fitBounds(sukoharjo.getBounds());
+  map.fitBounds(klaten.getBounds());
+  map.fitBounds(karanganyar.getBounds());
+  map.fitBounds(sragen.getBounds());
+  map.fitBounds(boyolali.getBounds());
+  map.fitBounds(wonogiri.getBounds());
   featureList = new List("features", {valueNames: ["feature-name"]});
   featureList.sort("feature-name", {order:"asc"});
 
-  var jogjaBH = new Bloodhound({
-    name: "jogja",
+  var surakartaBH = new Bloodhound({
+    name: "Surakarta",
     datumTokenizer: function (d) {
-      return Bloodhound.tokenizers.whitespace(d.Nama);
+      return Bloodhound.tokenizers.whitespace(d.name);
     },
     queryTokenizer: Bloodhound.tokenizers.whitespace,
-    local: jogjaSearch,
+    local: surakartaSearch,
+    limit: 10
+  });
+  
+  var sukoharjoBH = new Bloodhound({
+    name: "Sukoharjo",
+    datumTokenizer: function (d) {
+      return Bloodhound.tokenizers.whitespace(d.name);
+    },
+    queryTokenizer: Bloodhound.tokenizers.whitespace,
+    local: sukoharjoSearch,
+    limit: 10
+  });
+  
+  var klatenBH = new Bloodhound({
+    name: "Klaten",
+    datumTokenizer: function (d) {
+      return Bloodhound.tokenizers.whitespace(d.name);
+    },
+    queryTokenizer: Bloodhound.tokenizers.whitespace,
+    local: klatenSearch,
+    limit: 10
+  });
+  
+  var karanganyarBH = new Bloodhound({
+    name: "Karanganyar",
+    datumTokenizer: function (d) {
+      return Bloodhound.tokenizers.whitespace(d.name);
+    },
+    queryTokenizer: Bloodhound.tokenizers.whitespace,
+    local: karanganyarSearch,
+    limit: 10
+  });
+  
+  var sragenBH = new Bloodhound({
+    name: "Sragen",
+    datumTokenizer: function (d) {
+      return Bloodhound.tokenizers.whitespace(d.name);
+    },
+    queryTokenizer: Bloodhound.tokenizers.whitespace,
+    local: sragenSearch,
+    limit: 10
+  });
+  
+  var boyolaliBH = new Bloodhound({
+    name: "Boyolali",
+    datumTokenizer: function (d) {
+      return Bloodhound.tokenizers.whitespace(d.name);
+    },
+    queryTokenizer: Bloodhound.tokenizers.whitespace,
+    local: boyolaliSearch,
+    limit: 10
+  });
+  
+  var wonogiriBH = new Bloodhound({
+    name: "Wonogiri",
+    datumTokenizer: function (d) {
+      return Bloodhound.tokenizers.whitespace(d.name);
+    },
+    queryTokenizer: Bloodhound.tokenizers.whitespace,
+    local: wonogiriSearch,
+    limit: 10
+  });
+
+  var wisataBH = new Bloodhound({
+    name: "Wisata Jawa Tengah",
+    datumTokenizer: function (d) {
+      return Bloodhound.tokenizers.whitespace(d.name);
+    },
+    queryTokenizer: Bloodhound.tokenizers.whitespace,
+    local: wisataSearch,
     limit: 10
   });
   
   var wisatajogjaBH = new Bloodhound({
     name: "Wisata Jogja",
     datumTokenizer: function (d) {
-      return Bloodhound.tokenizers.whitespace(d.Nama);
+      return Bloodhound.tokenizers.whitespace(d.name);
     },
     queryTokenizer: Bloodhound.tokenizers.whitespace,
     local: wisatajogjaSearch,
@@ -435,16 +1009,23 @@ $(document).one("ajaxStop", function () {
       ajax: {
         beforeSend: function (jqXhr, settings) {
           settings.url += "&east=" + map.getBounds().getEast() + "&west=" + map.getBounds().getWest() + "&north=" + map.getBounds().getNorth() + "&south=" + map.getBounds().getSouth();
-          $("#searchicon").removeClass("fa-search").addClass("fa-refresh fa-spin");
+          $("#searchicon").removeClass("fa fa-search").addClass("fas fa-sync fa-spin");
         },
         complete: function (jqXHR, status) {
-          $('#searchicon').removeClass("fa-refresh fa-spin").addClass("fa-search");
+          $('#searchicon').removeClass("fas fa-sync fa-spin").addClass("fa fa-search");
         }
       }
     },
     limit: 10
   });
-  jogjaBH.initialize();
+  surakartaBH.initialize();
+  sukoharjoBH.initialize();
+  klatenBH.initialize();
+  karanganyarBH.initialize();
+  sragenBH.initialize();
+  boyolaliBH.initialize();
+  wonogiriBH.initialize();
+  wisataBH.initialize();
   wisatajogjaBH.initialize();
   geonamesBH.initialize();
 
@@ -454,18 +1035,74 @@ $(document).one("ajaxStop", function () {
     highlight: true,
     hint: false
   }, {
-    name: "jogja",
+    name: "Surakarta",
     displayKey: "name",
-    source: jogjaBH.ttAdapter(),
+    source: surakartaBH.ttAdapter(),
     templates: {
-      header: "<h4 class='typeahead-header'>Kota Jogja</h4>"
+      header: "<h4 class='typeahead-header'>Kota Surakarta</h4>"
+    }
+  }, {
+    name: "Sukoharjo",
+    displayKey: "name",
+    source: sukoharjoBH.ttAdapter(),
+    templates: {
+      header: "<h4 class='typeahead-header'>Kabupaten Sukoharjo</h4>"
+    }
+  },
+  {
+    name: "Klaten",
+    displayKey: "name",
+    source: klatenBH.ttAdapter(),
+    templates: {
+      header: "<h4 class='typeahead-header'>Kabupaten Klaten</h4>"
+    }
+  },
+  {
+    name: "Karanganyar",
+    displayKey: "name",
+    source: karanganyarBH.ttAdapter(),
+    templates: {
+      header: "<h4 class='typeahead-header'>Kabupaten Karanganyar</h4>"
+    }
+  },
+  {
+    name: "Sragen",
+    displayKey: "name",
+    source: sragenBH.ttAdapter(),
+    templates: {
+      header: "<h4 class='typeahead-header'>Kabupaten Sragen</h4>"
+    }
+  },
+  {
+    name: "Boyolali",
+    displayKey: "name",
+    source: boyolaliBH.ttAdapter(),
+    templates: {
+      header: "<h4 class='typeahead-header'>Kabupaten Boyolali</h4>"
+    }
+  },
+  {
+    name: "Wonogiri",
+    displayKey: "name",
+    source: wonogiriBH.ttAdapter(),
+    templates: {
+      header: "<h4 class='typeahead-header'>Kabupaten Wonogiri</h4>"
+    }
+  },
+  {
+    name: "Jateng",
+    displayKey: "name",
+    source: wisataBH.ttAdapter(),
+    templates: {
+      header: "<h6 class='typeahead-header'><img src='assets/img/pin.png' width='24' height='24'>&nbsp;Wisata Jawa Tengah</h6>",
+      suggestion: Handlebars.compile(["{{name}}<br>&nbsp;<small>{{address}}</small>"].join(""))
     }
   }, {
     name: "Jogja",
     displayKey: "name",
     source: wisatajogjaBH.ttAdapter(),
     templates: {
-      header: "<h4 class='typeahead-header'><img src='assets/img/dot_pinlet.png' width='23' height='32'>&nbsp;Wisata Yogyakarta</h4>",
+      header: "<h6 class='typeahead-header'><img src='assets/img/pin.png' width='24' height='24'>&nbsp;Wisata Yogyakarta</h6>",
       suggestion: Handlebars.compile(["{{name}}<br>&nbsp;<small>{{address}}</small>"].join(""))
     }
   },
@@ -474,11 +1111,38 @@ $(document).one("ajaxStop", function () {
     displayKey: "name",
     source: geonamesBH.ttAdapter(),
     templates: {
-      header: "<h4 class='typeahead-header'><img src='assets/img/globe.png' width='25' height='25'>&nbsp;GeoNames</h4>"
+      header: "<h6 class='typeahead-header'><img src='assets/img/globe.png' width='25' height='25'>&nbsp;GeoNames</h6>"
     }
   }).on("typeahead:selected", function (obj, datum) {
-    if (datum.source === "jogja") {
+    if (datum.source === "Surakarta") {
       map.fitBounds(datum.bounds);
+    }
+    if (datum.source === "Sukoharjo") {
+      map.fitBounds(datum.bounds);
+    }
+    if (datum.source === "Klaten") {
+      map.fitBounds(datum.bounds);
+    }
+    if (datum.source === "Karanganyar") {
+      map.fitBounds(datum.bounds);
+    }
+    if (datum.source === "Sragen") {
+      map.fitBounds(datum.bounds);
+    }
+    if (datum.source === "Boyolali") {
+      map.fitBounds(datum.bounds);
+    }
+    if (datum.source === "Wonogiri") {
+      map.fitBounds(datum.bounds);
+    }
+    if (datum.source === "Jateng") {
+      if (!map.hasLayer(wisataLayer)) {
+        map.addLayer(wisataLayer);
+      }
+      map.setView([datum.lat, datum.lng], 17);
+      if (map._layers[datum.id]) {
+        map._layers[datum.id].fire("click");
+      }
     }
     if (datum.source === "Jogja") {
       if (!map.hasLayer(wisatajogjaLayer)) {
