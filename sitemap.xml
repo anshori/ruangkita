@@ -7,7 +7,13 @@
 
 <url>
   <loc>https://maspannn.github.io/ruangkita/</loc>
-  <lastmod>2022-08-05T07:36:47+00:00</lastmod>
+  <lastmod>2022-08-08T14:15:29+00:00</lastmod>
+  <priority>1.00</priority>
+</url>
+<url>
+  <loc>https://maspannn.github.io/ruangkita/index.html</loc>
+  <lastmod>2022-08-08T14:15:29+00:00</lastmod>
+  <priority>0.80</priority>
 </url>
 
 
