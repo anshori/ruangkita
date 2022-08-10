@@ -824,10 +824,13 @@ var locateControl = L.control
   })
   .addTo(map);
 
-L.control.betterscale({
-  metric:true, 
-  imperial: false
-}).addTo(map);
+/* Scalebar */  
+L.control
+	.scale({
+		maxWidth: 150,
+		imperial: false,
+	})
+	.addTo(map);
 
 /* Larger screens get expanded layer control and visible sidebar */
 if (document.body.clientWidth <= 767) {
